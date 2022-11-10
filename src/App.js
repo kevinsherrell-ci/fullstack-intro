@@ -1,6 +1,7 @@
 import "./App.css";
 import {useEffect, useState} from "react";
 import BlogList from "./Components/BlogList";
+import OptionBar from "./Components/OptionBar";
 
 const urlEndpoint = process.env.REACT_APP_URL_ENDPOINT;
 const sampleBlogs = [
@@ -43,9 +44,16 @@ const sampleBlogs = [
 
 const App = () => {
     const [blogs, setBlogs] = useState([...sampleBlogs]);
+    const [urlParamString, setUrlParamString] = useState("");
+    console.log(urlParamString);
+    const generateUrlParams = (limit, page, sortBy, order)=>{
+        console.log("Generate URL Params");
+        setUrlParamString(`?limit=${limit}&page=${page}&sortBy=${sortBy}&order=${order}`);
+    }
     useEffect(()=>{
         const fetchBlogs = async ()=>{
-            const result = await fetch(`${urlEndpoint}/blogs`);
+            // const result = await fetch(`${urlEndpoint}/blogs`);
+            const result = await fetch(`${urlEndpoint}/blogs${urlParamString !== "" ? urlParamString : ""}`);
             console.log("result", result);
             return result.json();
         }
@@ -55,9 +63,10 @@ const App = () => {
                setBlogs(blogs);
            })
 
-    }, [])
+    }, [urlParamString])
     return (
         <div className="App-header">
+            <OptionBar generateUrlParams={generateUrlParams}/>
             <BlogList blogs={blogs}/>
         </div>
     );
